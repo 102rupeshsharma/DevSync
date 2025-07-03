@@ -3,6 +3,7 @@ import { DashBoard } from '../components/Dashboard'
 import { AddProject } from '../components/AddPoject';
 import { Settings } from '../components/Settings';
 import type { Project } from '../Interfaces/project';
+import UserIcon  from '../assets/User-icon.png'
 
 export const Home = () => {
     const [activePage, setActivePage] = useState<String>("dashBoard");
@@ -30,8 +31,8 @@ export const Home = () => {
                         <button onClick={() => setActivePage('settings')} className="my-2 mx-2 p-2 rounded-2xl w-full border-1 border-gray-500 shadow-md shadow-black text-white cursor-pointer">Settings</button>
                     </div>
 
-                    <div className="mt-auto p-4 mb-10 text-center border bg-amber-200">
-                        Login
+                    <div className="flex justify-center gap-3 mx-5 rounded-2xl border border-gray-500 shadow-md shadow-black text-white cursor-pointer mt-auto p-4 mb-10 text-center">
+                        <span> <img className="w-8 h-8" src={UserIcon} alt="user-icon" /> </span><span className='text-3xl font-bold text-white'>Login</span>
                     </div>
                 </div>
 
