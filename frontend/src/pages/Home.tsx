@@ -10,18 +10,10 @@ export const Home = () => {
 
     const renderComponent = () => {
         switch (activePage) {
-            case 'dashBoard': return <DashBoard onEditProject={(project: Project) => {
-                setSelectedProject(project);
-                setActivePage("addProject");
-            }}
-            />;
+            case 'dashBoard': return <DashBoard/>;
             case 'addProject': return <AddProject projectToEdit={selectedProject} clearEdit={() => setSelectedProject(null)} />;
             case 'settings': return <Settings />
-            default: return <DashBoard onEditProject={(project: Project) => {
-                setSelectedProject(project);
-                setActivePage("addProject");
-            }}
-            />;
+            default: return <DashBoard />;
         }
     }
     return (
