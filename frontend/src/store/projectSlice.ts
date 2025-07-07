@@ -13,14 +13,14 @@ const initialState: ProjectState = {
             id: '1',
             name: "DevSync Tracker",
             tech: "React, TypeScript, Redux Toolkit",
-            status:"In Progress",
+            status: "In Progress",
             description: "A developer collaboration and project tracking platform with GitHub integration and AI summaries."
         },
         {
             id: '2',
             name: "ToDo App",
             tech: "React, TypeScript, Tailwind CSS",
-            status:"Planned",
+            status: "Planned",
             description:
                 "A simple and intuitive task management application with full CRUD functionality. Users can add, update, and delete tasks with real-time state updates using hooks."
         },
@@ -28,17 +28,21 @@ const initialState: ProjectState = {
             id: '3',
             name: "MeetingMind",
             tech: "FastAPI, Whisper, Hugging Face Transformers, React",
-            status:"Completed",
-            description:
-                "An AI-powered meeting summarizer and emotion analyzer. Converts uploaded audio into transcriptions using Whisper, summarizes content with BART, and detects emotions via NLP models. Deployed on Hugging Face Spaces with a React frontend."
+            status: "Completed",
+            description: "An AI-powered meeting summarizer and emotion analyzer. Converts uploaded audio into transcriptions using Whisper, summarizes content with BART, and detects emotions via NLP models. Deployed on Hugging Face Spaces with a React frontend.",
+            url: "https://meetingmind-lyart.vercel.app/",
+            startDate: "2024-06-10",
+            endDate: "2024-06-24"
         },
         {
             id: '4',
             name: "Resume Builder",
             tech: "React, TypeScript, HTML to PDF, Tailwind CSS",
-            status:"Completed",
-            description:
-                "A customizable resume builder that allows users to input professional details and generate a formatted PDF resume. Includes live preview, export functionality, and responsive UI."
+            status: "Completed",
+            description: "A customizable resume builder that allows users to input professional details and generate a formatted PDF resume. Includes live preview, export functionality, and responsive UI.",
+            url: "https://cv-io.vercel.app/",
+            startDate: "2024-05-05",
+            endDate: "2024-05-15"
         }
     ]
 };
