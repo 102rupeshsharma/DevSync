@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react"
-import type { Project } from '../Interfaces/project'
-import { useDispatch } from "react-redux"
-import type { AppDispatch } from "../store/store"
-import { addProject, updateProject } from "../store/projectSlice"
-import { Box, TextField, Button, Paper, Typography } from '@mui/material'
+import React, { useEffect, useState } from "react";
+import type { Project } from '../Interfaces/project';
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../store/store";
+import { addProject, updateProject } from "../store/projectSlice";
+import { Box, TextField, Button, Paper, Typography, MenuItem } from '@mui/material';
 import { v4 as uuidv4 } from "uuid";
-import { MenuItem } from '@mui/material';
-
 
 interface Props {
   projectToEdit?: Project | null;
@@ -14,14 +12,18 @@ interface Props {
 }
 
 export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
+
   const [formData, setFormData] = useState<Project>({
     id: '',
     name: '',
     tech: '',
     description: '',
-    status: 'Planned'
-  })
+    status: 'Planned',
+    url: '',
+    startDate: '',
+    endDate: ''
+  });
 
   useEffect(() => {
     if (projectToEdit) {
@@ -30,11 +32,9 @@ export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
   }, [projectToEdit]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }))
-  }
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +44,27 @@ export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
     } else {
       dispatch(addProject({ ...formData, id: uuidv4() }));
     }
-    setFormData({ id: '', name: '', tech: '', description: '', status: 'Planned' });
+    setFormData({
+      id: '',
+      name: '',
+      tech: '',
+      description: '',
+      status: 'Planned',
+      url: '',
+      startDate: '',
+      endDate: ''
+    });
+  };
+
+  const commonStyles = {
+    input: { color: 'white' },
+    label: { color: 'white' },
+    '& label.Mui-focused': { color: '#1E88E5' },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': { borderColor: 'gray' },
+      '&:hover fieldset': { borderColor: 'white' },
+      '&.Mui-focused fieldset': { borderColor: '#1E88E5' },
+    }
   };
 
   return (
@@ -83,7 +103,6 @@ export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
           {projectToEdit ? 'Edit Project' : 'Add New Project'}
         </Typography>
 
-
         <Box
           component="form"
           onSubmit={handleSubmit}
@@ -96,16 +115,7 @@ export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
             value={formData.name}
             onChange={handleChange}
             fullWidth
-            sx={{
-              input: { color: 'white' },
-              label: { color: 'white' },
-              '& label.Mui-focused': { color: '#1E88E5' },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: 'gray' },
-                '&:hover fieldset': { borderColor: 'white' },
-                '&.Mui-focused fieldset': { borderColor: '#1E88E5' },
-              }
-            }}
+            sx={commonStyles}
           />
 
           <TextField
@@ -115,16 +125,7 @@ export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
             value={formData.tech}
             onChange={handleChange}
             fullWidth
-            sx={{
-              input: { color: 'white' },
-              label: { color: 'white' },
-              '& label.Mui-focused': { color: '#1E88E5' },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: 'gray' },
-                '&:hover fieldset': { borderColor: 'white' },
-                '&.Mui-focused fieldset': { borderColor: '#1E88E5' },
-              }
-            }}
+            sx={commonStyles}
           />
 
           <TextField
@@ -136,17 +137,10 @@ export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
             fullWidth
             InputLabelProps={{ shrink: true }}
             sx={{
-              color: 'white',
+              ...commonStyles,
               '& .MuiInputBase-root': { color: 'white' },
-              '& .MuiInputLabel-root': { color: 'white' },
               '& .MuiOutlinedInput-notchedOutline': {
                 borderColor: 'gray',
-              },
-              '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white',
-              },
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#1E88E5',
               },
             }}
           >
@@ -154,7 +148,6 @@ export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
             <MenuItem value="In Progress">In Progress</MenuItem>
             <MenuItem value="Completed">Completed</MenuItem>
           </TextField>
-
 
           <TextField
             label="Description"
@@ -169,15 +162,48 @@ export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
               '& .MuiInputBase-root textarea': {
                 color: 'white',
               },
-              label: { color: 'white' },
-              '& label.Mui-focused': { color: '#1E88E5' },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: 'gray' },
-                '&:hover fieldset': { borderColor: 'white' },
-                '&.Mui-focused fieldset': { borderColor: '#1E88E5' },
-              },
+              ...commonStyles,
             }}
           />
+
+          {/* Show only if status is "Completed" */}
+          {formData.status === "Completed" && (
+            <>
+              <TextField
+                label="Project URL"
+                name="url"
+                variant="outlined"
+                value={formData.url}
+                onChange={handleChange}
+                fullWidth
+                sx={commonStyles}
+              />
+
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  label="Start Date"
+                  name="startDate"
+                  type="date"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                  sx={commonStyles}
+                />
+
+                <TextField
+                  label="End Date"
+                  name="endDate"
+                  type="date"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                  sx={commonStyles}
+                />
+              </Box>
+            </>
+          )}
 
           <Button
             type="submit"
@@ -197,5 +223,5 @@ export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
         </Box>
       </Paper>
     </Box>
-  )
-}
+  );
+};

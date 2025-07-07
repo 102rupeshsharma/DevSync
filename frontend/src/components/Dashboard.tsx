@@ -1,4 +1,3 @@
-// ...imports
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import type { AppDispatch, RootState } from "../store/store";
@@ -13,6 +12,7 @@ export const DashBoard = () => {
 
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProjectDetails, setSelectedProjectDetails] = useState<Project | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("status");
 
@@ -61,9 +61,8 @@ export const DashBoard = () => {
         return a.tech.localeCompare(b.tech);
       }
 
-      return 0;
+      return 0; // default fallback
     });
-
 
   return (
     <div className="p-8 text-white w-full relative">
@@ -86,7 +85,6 @@ export const DashBoard = () => {
             <option value="name">Sort by Name</option>
             <option value="tech">Sort by Tech</option>
           </select>
-
           <button
             onClick={() => exportProjectsToPDF(filteredProjects)}
             className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm"
@@ -99,14 +97,7 @@ export const DashBoard = () => {
       {filteredProjects.length === 0 ? (
         <p className="text-gray-400 text-center">No projects found.</p>
       ) : (
-        <div
-          style={{
-            backgroundColor: "#13181C",
-            color: "#ffffff",
-            padding: "1rem",
-            borderRadius: "10px"
-          }}
-        >
+        <div className="bg-[#13181C] text-white p-4 rounded-xl">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <div className="bg-[#1A1F23] p-4 rounded-lg text-center border border-gray-600">
               <h4 className="text-lg font-semibold mb-1">Total Projects</h4>
@@ -154,9 +145,11 @@ export const DashBoard = () => {
                     {proj.status}
                   </span>
                 </p>
-                <p className="text-gray-300 mb-3 break-words whitespace-pre-wrap">{proj.description}</p>
+                <p className="text-gray-300 mb-3 break-words whitespace-pre-wrap">
+                  {proj.description}
+                </p>
 
-                <div className="flex gap-3 mt-2">
+                <div className="flex flex-wrap gap-3 mt-2">
                   <button
                     onClick={() => handleEdit(proj)}
                     className="px-4 py-1 border border-blue-500 text-blue-400 rounded hover:bg-blue-500 hover:text-white transition text-sm"
@@ -169,6 +162,12 @@ export const DashBoard = () => {
                   >
                     Delete
                   </button>
+                  <button
+                    onClick={() => setSelectedProjectDetails(proj)}
+                    className="px-4 py-1 border border-cyan-500 text-cyan-400 rounded hover:bg-cyan-500 hover:text-white transition text-sm"
+                  >
+                    View Details
+                  </button>
                 </div>
               </div>
             ))}
@@ -176,6 +175,7 @@ export const DashBoard = () => {
         </div>
       )}
 
+      {/* Modal for Editing Project */}
       {isModalOpen && editingProject && (
         <div
           className="absolute top-0 left-0 right-0 bottom-0 backdrop-blur-sm bg-white/5 z-50 flex justify-center items-center"
@@ -183,6 +183,57 @@ export const DashBoard = () => {
         >
           <div className="bg-transparent" onClick={(e) => e.stopPropagation()}>
             <AddProject projectToEdit={editingProject} clearEdit={closeModal} />
+          </div>
+        </div>
+      )}
+
+      {/* Modal for Viewing Project Details */}
+      {selectedProjectDetails && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+          onClick={() => setSelectedProjectDetails(null)}
+        >
+          <div
+            className="bg-[#1A1F23] text-white rounded-xl shadow-lg p-6 w-[90%] sm:w-[600px] max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Project Details</h2>
+              <button
+                onClick={() => setSelectedProjectDetails(null)}
+                className="text-gray-300 hover:text-red-400 text-xl font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3 text-sm sm:text-base">
+              <p><span className="font-semibold">Name:</span> {selectedProjectDetails.name}</p>
+              <p><span className="font-semibold">Tech Stack:</span> {selectedProjectDetails.tech}</p>
+              <p><span className="font-semibold">Status:</span> {selectedProjectDetails.status}</p>
+              <p><span className="font-semibold">Description:</span><br /> {selectedProjectDetails.description}</p>
+
+              {selectedProjectDetails.url && (
+                <p>
+                  <span className="font-semibold">Hosted URL:</span>{" "}
+                  <a
+                    href={selectedProjectDetails.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 underline"
+                  >
+                    {selectedProjectDetails.url}
+                  </a>
+                </p>
+              )}
+
+              {selectedProjectDetails.startDate && (
+                <p><span className="font-semibold">Start Date:</span> {selectedProjectDetails.startDate}</p>
+              )}
+              {selectedProjectDetails.endDate && (
+                <p><span className="font-semibold">End Date:</span> {selectedProjectDetails.endDate}</p>
+              )}
+            </div>
           </div>
         </div>
       )}

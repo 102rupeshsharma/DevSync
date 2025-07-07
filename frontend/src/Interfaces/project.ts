@@ -3,6 +3,8 @@ export interface Project {
   name: string;
   tech: string;
   description: string;
-  date?: string;
   status?: "Planned" | "In Progress" | "Completed";
+  url?: string;
+  startDate?: string;
+  endDate?: string;
 }
