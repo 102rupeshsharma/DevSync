@@ -5,6 +5,7 @@ import type { AppDispatch, RootState } from "../store/store";
 import type { Project } from "../Interfaces/project";
 import { deleteProject } from "../store/projectSlice";
 import { AddProject } from "./AddPoject";
+import { exportProjectsToPDF } from "../utils/exportToPDF";
 
 export const DashBoard = () => {
   const projects = useSelector((state: RootState) => state.project.projects);
@@ -13,7 +14,7 @@ export const DashBoard = () => {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("name");
+  const [sortOption, setSortOption] = useState("status");
 
   const totalProjects = projects.length;
   const allTechs = projects.flatMap(p =>
@@ -41,14 +42,25 @@ export const DashBoard = () => {
   const filteredProjects = projects
     .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {
-      if (sortOption === "name") return a.name.localeCompare(b.name);
-      if (sortOption === "tech") return a.tech.localeCompare(b.tech);
       if (sortOption === "status") {
         const order = ["In Progress", "Planned", "Completed"];
         const statusA = a.status ?? "";
         const statusB = b.status ?? "";
-        return order.indexOf(statusA) - order.indexOf(statusB);
+
+        const indexA = order.indexOf(statusA);
+        const indexB = order.indexOf(statusB);
+
+        return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
       }
+
+      if (sortOption === "name") {
+        return a.name.localeCompare(b.name);
+      }
+
+      if (sortOption === "tech") {
+        return a.tech.localeCompare(b.tech);
+      }
+
       return 0;
     });
 
@@ -70,10 +82,17 @@ export const DashBoard = () => {
             onChange={(e) => setSortOption(e.target.value)}
             className="p-2 bg-[#1A1F23] border border-gray-600 rounded text-white"
           >
+            <option value="status">Sort by Status</option>
             <option value="name">Sort by Name</option>
             <option value="tech">Sort by Tech</option>
-            <option value="status">Sort by Status</option>
           </select>
+
+          <button
+            onClick={() => exportProjectsToPDF(filteredProjects)}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm"
+          >
+            Export as PDF
+          </button>
         </div>
       </div>
 
