@@ -37,10 +37,10 @@ const Login = () => {
                 throw new Error(data.message || 'Login failed');
             }
             localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
+            localStorage.setItem('user', JSON.stringify(data.user));
 
-            // Store token or user info if needed: localStorage.setItem('token', data.token);
-            navigate('/'); // Redirect to dashboard/home
+            
+            navigate('/'); 
         } catch (err: any) {
             setError(err.message);
         } finally {

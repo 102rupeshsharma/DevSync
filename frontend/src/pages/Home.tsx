@@ -12,7 +12,7 @@ export const Home = () => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [user, setUser] = useState<{ username: string } | null>(null);
 
-    // Load user from localStorage on component mount
+    
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -51,14 +51,11 @@ export const Home = () => {
 
     return (
         <div className="flex">
-            {/* Sidebar */}
             <div className="bg-[#171d22] w-[300px] h-screen flex flex-col border-r">
-                {/* Logo */}
                 <div className="font-Pacifico text-blue-800 text-5xl flex justify-center items-center h-20">
                     <p>DevSync</p>
                 </div>
 
-                {/* Sidebar Navigation */}
                 <div className="text-3xl p-5 flex flex-col items-center gap-4">
                     <button
                         onClick={() => setActivePage('dashBoard')}
@@ -80,7 +77,6 @@ export const Home = () => {
                     </button>
                 </div>
 
-                {/* User Info or Login */}
                 <div className="relative mt-auto mb-10 text-center mx-5">
                     {!user ? (
                         <div
@@ -92,7 +88,6 @@ export const Home = () => {
                         </div>
                     ) : (
                         <div className="relative group">
-                            {/* Logout Dropdown */}
                             <div
                                 onClick={handleLogout}
                                 className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-full bg-[#2d63d9] text-white text-lg font-medium px-4 py-3 rounded-t-2xl opacity-0 scale-y-0 group-hover:opacity-100 group-hover:scale-y-100 transition-all duration-300 origin-bottom hover:bg-[#1f4bb8]"
@@ -100,7 +95,6 @@ export const Home = () => {
                                 Logout
                             </div>
 
-                            {/* User Button */}
                             <div className="flex justify-center items-center gap-3 border border-gray-500 shadow-md shadow-black text-white px-4 py-3 transition duration-300 rounded-2xl group-hover:rounded-t-none bg-[#171d22] cursor-pointer">
                                 <img className="w-8 h-8" src={UserIcon} alt="user-icon" />
                                 <span className="text-2xl font-bold text-white truncate max-w-[150px] overflow-hidden whitespace-nowrap block">
@@ -112,7 +106,6 @@ export const Home = () => {
                 </div>
             </div>
 
-            {/* Main Content */}
             <div className="flex justify-center size-full h-screen bg-[#13181C] text-white">
                 {renderComponent()}
             </div>
