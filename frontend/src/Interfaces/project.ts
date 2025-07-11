@@ -1,10 +1,11 @@
 export interface Project {
-  id: string;
+  id?: string;
   name: string;
   tech: string;
+  status: "Planned" | "In Progress" | "Completed";
   description: string;
-  status?: "Planned" | "In Progress" | "Completed";
   url?: string;
   startDate?: string;
   endDate?: string;
+  ownerEmail?: string;
 }

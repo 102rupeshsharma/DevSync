@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import type { Project } from '../Interfaces/project';
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../store/store";
-import { addProject, updateProject } from "../store/projectSlice";
+import { addProjectOptimistic, updateProject } from "../store/projectsSlice";
+import { addProjectAsync, updateProjectAsync } from "../store/projectsSlice";
 import { Box, TextField, Button, Paper, Typography, MenuItem } from '@mui/material';
 import { v4 as uuidv4 } from "uuid";
+import { useSnackbar } from 'notistack';
 
 interface Props {
   projectToEdit?: Project | null;
@@ -13,6 +15,7 @@ interface Props {
 
 export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [formData, setFormData] = useState<Project>({
     id: '',
@@ -36,14 +39,33 @@ export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const token = localStorage.getItem('token'); // Or wherever you store the JWT
+    if (!token) {
+      enqueueSnackbar('Authentication token missing', { variant: 'error' });
+      return;
+    }
+
     if (projectToEdit) {
       dispatch(updateProject(formData));
+      dispatch(updateProjectAsync({ project: formData, token }));
+      enqueueSnackbar('Project updated successfully!', { variant: 'success' });
       clearEdit();
     } else {
-      dispatch(addProject({ ...formData, id: uuidv4() }));
+      const tempId = uuidv4();
+      const optimisticProject = { ...formData, id: tempId };
+
+      // 1. Immediately show in UI
+      dispatch(addProjectOptimistic(optimisticProject));
+
+      // 2. Send to backend
+      dispatch(addProjectAsync({ project: optimisticProject, token }));
+
+      enqueueSnackbar('Project added successfully!', { variant: 'success' });
     }
+
     setFormData({
       id: '',
       name: '',
@@ -166,7 +188,6 @@ export const AddProject: React.FC<Props> = ({ projectToEdit, clearEdit }) => {
             }}
           />
 
-          {/* Show only if status is "Completed" */}
           {formData.status === "Completed" && (
             <>
               <TextField

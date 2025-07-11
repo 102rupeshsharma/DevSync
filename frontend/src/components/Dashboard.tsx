@@ -1,20 +1,30 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { AppDispatch, RootState } from "../store/store";
 import type { Project } from "../Interfaces/project";
-import { deleteProject } from "../store/projectSlice";
+import { deleteProject, deleteProjectAsync } from "../store/projectsSlice";
 import { AddProject } from "./AddPoject";
 import { exportProjectsToPDF } from "../utils/exportToPDF";
+import { fetchProjects } from "../store/projectsSlice";
+import { useSnackbar } from 'notistack';
 
 export const DashBoard = () => {
-  const projects = useSelector((state: RootState) => state.project.projects);
+  const { enqueueSnackbar } = useSnackbar();
+  const projects = useSelector((state: RootState) => state.projects.projects);
   const dispatch = useDispatch<AppDispatch>();
-
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProjectDetails, setSelectedProjectDetails] = useState<Project | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("status");
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(fetchProjects());
+    }
+  }, []);
 
   const totalProjects = projects.length;
   const allTechs = projects.flatMap(p =>
@@ -29,7 +39,19 @@ export const DashBoard = () => {
 
   const mostUsedTech = Object.entries(techFrequency).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
 
-  const handleDelete = (id: string) => dispatch(deleteProject(id));
+  const handleDelete = (id: string) => {
+    if (!token) return;
+
+    try {
+      dispatch(deleteProject(id));
+      dispatch(deleteProjectAsync({id, token}))
+      enqueueSnackbar('Project deleted successfully!', { variant: 'success' });
+    } catch (err) {
+      enqueueSnackbar('Failed to delete project!', { variant: 'error' });
+    }
+
+  };
+
   const handleEdit = (project: Project) => {
     setEditingProject(project);
     setIsModalOpen(true);
@@ -61,7 +83,7 @@ export const DashBoard = () => {
         return a.tech.localeCompare(b.tech);
       }
 
-      return 0; // default fallback
+      return 0;
     });
 
   return (
@@ -157,7 +179,10 @@ export const DashBoard = () => {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(proj.id)}
+                    onClick={() => {
+                      const projectId = proj.id || (proj as any)._id;
+                      if (projectId) handleDelete(projectId);
+                    }}
                     className="px-4 py-1 border border-red-500 text-red-400 rounded hover:bg-red-500 hover:text-white transition text-sm"
                   >
                     Delete

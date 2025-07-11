@@ -12,7 +12,7 @@ export const Home = () => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [user, setUser] = useState<{ username: string } | null>(null);
 
-    
+
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -50,8 +50,8 @@ export const Home = () => {
     };
 
     return (
-        <div className="flex">
-            <div className="bg-[#171d22] w-[300px] h-screen flex flex-col border-r">
+        <div className="flex h-screen overflow-hidden">
+            <div className="bg-[#171d22] w-[300px] min-w-[270px] max-w-[2700px] flex flex-col border-r">
                 <div className="font-Pacifico text-blue-800 text-5xl flex justify-center items-center h-20">
                     <p>DevSync</p>
                 </div>
@@ -59,22 +59,33 @@ export const Home = () => {
                 <div className="text-3xl p-5 flex flex-col items-center gap-4">
                     <button
                         onClick={() => setActivePage('dashBoard')}
-                        className="my-2 mx-2 p-2 rounded-2xl w-full border border-gray-500 shadow-md shadow-black text-white cursor-pointer"
+                        className={`my-2 mx-2 p-2 rounded-2xl w-full border text-white cursor-pointer shadow-md ${activePage === 'dashBoard'
+                            ? 'border-blue-500 shadow-blue-500'
+                            : 'border-gray-500 shadow-black'
+                            }`}
                     >
                         DashBoard
                     </button>
+
                     <button
                         onClick={() => setActivePage('addProject')}
-                        className="my-2 mx-2 p-2 rounded-2xl w-full border border-gray-500 shadow-md shadow-black text-white cursor-pointer"
+                        className={`my-2 mx-2 p-2 rounded-2xl w-full border text-white cursor-pointer shadow-md ${activePage === 'addProject'
+                            ? 'border-blue-500 shadow-blue-500'
+                            : 'border-gray-500 shadow-black'
+                            }`}
                     >
                         Add Project
                     </button>
                     <button
                         onClick={() => setActivePage('settings')}
-                        className="my-2 mx-2 p-2 rounded-2xl w-full border border-gray-500 shadow-md shadow-black text-white cursor-pointer"
+                        className={`my-2 mx-2 p-2 rounded-2xl w-full border text-white cursor-pointer shadow-md ${activePage === 'settings'
+                                ? 'border-blue-500 shadow-blue-500'
+                                : 'border-gray-500 shadow-black'
+                            }`}
                     >
                         Settings
                     </button>
+
                 </div>
 
                 <div className="relative mt-auto mb-10 text-center mx-5">
@@ -106,7 +117,7 @@ export const Home = () => {
                 </div>
             </div>
 
-            <div className="flex justify-center size-full h-screen bg-[#13181C] text-white">
+            <div className="flex-1 overflow-y-auto bg-[#13181C] text-white">
                 {renderComponent()}
             </div>
         </div>
